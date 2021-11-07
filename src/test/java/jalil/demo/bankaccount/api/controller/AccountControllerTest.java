@@ -1,26 +1,28 @@
 package jalil.demo.bankaccount.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jalil.demo.bankaccount.api.accountCreation.controller.AccountController;
-import jalil.demo.bankaccount.api.accountCreation.dto.request.AccountCreationRequest;
-import jalil.demo.bankaccount.api.accountCreation.dto.request.AccountToCreateDto;
-import jalil.demo.bankaccount.api.accountCreation.dto.response.AccountCreationResponse;
-import jalil.demo.bankaccount.api.accountCreation.service.AccountApiService;
+import jalil.demo.bankaccount.api.account.controller.AccountController;
+import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
+import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
+import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
+import jalil.demo.bankaccount.api.account.dto.response.CreatedAccountDto;
+import jalil.demo.bankaccount.api.account.service.AccountApiService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
+import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = AccountController.class)
@@ -79,6 +81,29 @@ public class AccountControllerTest
 
         assertThat(value.getAccount().getLimit()).isNull();
         assertThat(value.getAccount().getName()).isEqualTo("testAccount");
+    }
+
+    @Test
+    public void givenAnAccountId_WhenAccountExists_ThenReturnAccount() throws Exception
+    {
+        CreatedAccountDto dto = new CreatedAccountDto(1, "testName", 20.4f, LocalDateTime.now().toString());
+        AccountQueryResponse response = new AccountQueryResponse(dto);
+
+        when(accountApiService.getAccountById(1))
+                .thenReturn(ResponseEntity.ok().body(response));
+
+        MvcResult mvcResult = mockMvc.perform(get("/accounts/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        CreatedAccountDto createdAccountDto = objectMapper
+                .readValue(mvcResult.getResponse().getContentAsString(), AccountQueryResponse.class)
+                .getAccount();
+
+        assertThat(createdAccountDto.getId()).isEqualTo(1);
+        assertThat(createdAccountDto.getName()).isEqualTo("testName");
+        assertThat(createdAccountDto.getLimit()).isEqualTo(20.4f);
+        assertThat(createdAccountDto.getCreatedAt()).isNotNull();
     }
 
 }

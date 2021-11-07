@@ -1,24 +1,27 @@
 package jalil.demo.bankaccount.api.service;
 
-import jalil.demo.bankaccount.api.accountCreation.dto.request.AccountCreationRequest;
-import jalil.demo.bankaccount.api.accountCreation.dto.request.AccountToCreateDto;
-import jalil.demo.bankaccount.api.accountCreation.dto.response.AccountCreationResponse;
-import jalil.demo.bankaccount.api.accountCreation.service.AccountApiService;
+import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
+import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
+import jalil.demo.bankaccount.api.account.dto.response.AccountCreationResponse;
+import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
+import jalil.demo.bankaccount.api.account.service.AccountApiService;
+import jalil.demo.bankaccount.api.common.dto.ErrorResponse;
+import jalil.demo.bankaccount.api.common.dto.Response;
 import jalil.demo.bankaccount.domain.account.model.Account;
 import jalil.demo.bankaccount.domain.account.repo.IAccountRepository;
 import jalil.demo.bankaccount.domain.account.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -54,5 +57,31 @@ public class AccountApiServiceTest
         assertThat(newAccount.getAccount().getLimit()).isEqualTo(123.7f);
         assertThat(newAccount.getAccount().getCreatedAt()).isNotNull();
         assertThat(newAccount.getAccount().getId()).isEqualTo(1);
+    }
+
+    @Test
+    public void givenAccountId_WhenIsFound_ThenReturnIt()
+    {
+        Account account = new Account(2, "testName", 13.1f, LocalDateTime.now());
+
+        when(accountRepository.findById(2)).thenReturn(Optional.of(account));
+
+        AccountQueryResponse response = (AccountQueryResponse) accountApiService.getAccountById(2).getBody();
+
+        assertThat(response.getAccount().getName()).isEqualTo("testName");
+        assertThat(response.getAccount().getId()).isEqualTo(2);
+        assertThat(response.getAccount().getLimit()).isEqualTo(13.1f);
+        assertThat(response.getAccount().getCreatedAt()).isNotNull();
+    }
+
+    @Test
+    public void givenAccountId_WhenNotFound_ThenReturnErrorResponse()
+    {
+        when(accountRepository.findById(3)).thenReturn(Optional.empty());
+
+        ErrorResponse response = (ErrorResponse) accountApiService.getAccountById(3).getBody();
+
+        assertThat(response.getErrorCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.getErrorMessage()).isEqualTo("The account of id 3 wasn't found");
     }
 }

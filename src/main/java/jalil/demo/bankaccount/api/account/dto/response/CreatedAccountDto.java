@@ -1,4 +1,4 @@
-package jalil.demo.bankaccount.api.accountCreation.dto.response;
+package jalil.demo.bankaccount.api.account.dto.response;
 
 import jalil.demo.bankaccount.domain.account.model.Account;
 import lombok.AllArgsConstructor;

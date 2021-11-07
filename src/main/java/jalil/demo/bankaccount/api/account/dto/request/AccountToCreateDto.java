@@ -1,4 +1,4 @@
-package jalil.demo.bankaccount.api.accountCreation.dto.request;
+package jalil.demo.bankaccount.api.account.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
