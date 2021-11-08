@@ -149,4 +149,13 @@ public class AccountControllerTest
         verify(accountApiService).getBalance(59);
     }
 
+    @Test
+    public void givenAnAccountId_WhenTransactionsAreRequested_ThenReturnThem() throws Exception
+    {
+        mockMvc.perform(post("/accounts/223/transactions"))
+                .andExpect(status().isOk());
+
+        verify(accountApiService).getTransactions(223);
+    }
+
 }

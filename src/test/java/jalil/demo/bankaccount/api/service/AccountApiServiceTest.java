@@ -39,7 +39,7 @@ public class AccountApiServiceTest
     @BeforeEach
     public void setup()
     {
-        AccountService accountService = new AccountService(accountRepository);
+        AccountService accountService = new AccountService(accountRepository, null);
         accountApiService = new AccountApiService(accountService);
     }
 

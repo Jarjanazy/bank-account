@@ -50,4 +50,10 @@ public class AccountController
     {
         return accountApiService.getBalance(id);
     }
+
+    @PostMapping("/accounts/{id}/transactions")
+    public ResponseEntity<Response> getTransactions(@PathVariable int id)
+    {
+        return accountApiService.getTransactions(id);
+    }
 }

@@ -6,15 +6,18 @@ import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
 import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
 import jalil.demo.bankaccount.api.account.dto.request.WithdrawlRequest;
 import jalil.demo.bankaccount.api.account.dto.response.*;
+import jalil.demo.bankaccount.api.account.dto.response.transaction.TransactionsResponse;
 import jalil.demo.bankaccount.api.common.dto.ErrorResponse;
 import jalil.demo.bankaccount.api.common.dto.Response;
 import jalil.demo.bankaccount.domain.account.model.Account;
+import jalil.demo.bankaccount.domain.account.model.Transaction;
 import jalil.demo.bankaccount.domain.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -103,5 +106,14 @@ public class AccountApiService
                 .orElseThrow(RuntimeException::new);
 
         return ResponseEntity.ok(new BalanceResponse(new AmountDto(balance)));
+    }
+
+    public ResponseEntity<Response> getTransactions(int accountId)
+    {
+        List<Transaction> transactions = accountService.getTransactions(accountId);
+
+        return ResponseEntity
+                .ok()
+                .body(TransactionsResponse.fromTransactions(transactions));
     }
 }
