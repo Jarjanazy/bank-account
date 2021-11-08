@@ -5,10 +5,7 @@ import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
 import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
 import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
 import jalil.demo.bankaccount.api.account.dto.request.WithdrawlRequest;
-import jalil.demo.bankaccount.api.account.dto.response.AccountCreationResponse;
-import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
-import jalil.demo.bankaccount.api.account.dto.response.DepositResponse;
-import jalil.demo.bankaccount.api.account.dto.response.WithdrawalResponse;
+import jalil.demo.bankaccount.api.account.dto.response.*;
 import jalil.demo.bankaccount.api.account.service.AccountApiService;
 import jalil.demo.bankaccount.api.common.dto.ErrorResponse;
 import jalil.demo.bankaccount.api.common.dto.Response;
@@ -142,5 +139,17 @@ public class AccountApiServiceTest
         WithdrawalResponse withdrawalResponse = (WithdrawalResponse) accountApiService.withdrawl(2, withdrawlRequest).getBody();
 
         assertThat(withdrawalResponse.getBalance().getAmount()).isEqualTo(1f);
+    }
+
+    @Test
+    public void givenAccountId_WhenBalanceIsRequested_ThenReturnIt()
+    {
+        Account account = Account.builder().limit(22.5f).build();
+
+        when(accountRepository.findById(11)).thenReturn(Optional.of(account));
+
+       BalanceResponse balance = (BalanceResponse) accountApiService.getBalance(11).getBody();
+
+       assertThat(balance.getBalance().getAmount()).isEqualTo(22.5f);
     }
 }

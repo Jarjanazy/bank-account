@@ -44,4 +44,10 @@ public class AccountController
     {
         return accountApiService.withdrawl(id, withdrawlRequest);
     }
+
+    @PostMapping("/accounts/{id}/balance")
+    public ResponseEntity<Response> getBalance(@PathVariable int id)
+    {
+        return accountApiService.getBalance(id);
+    }
 }

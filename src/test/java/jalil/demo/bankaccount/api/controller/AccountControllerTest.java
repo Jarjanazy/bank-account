@@ -140,4 +140,13 @@ public class AccountControllerTest
         verify(accountApiService).withdrawl(eq(44), any(WithdrawlRequest.class));
     }
 
+    @Test
+    public void givenAnAccountId_WhenBalnaceIsRequested_ThenReturnIt() throws Exception
+    {
+        mockMvc.perform(post("/accounts/59/balance"))
+                .andExpect(status().isOk());
+
+        verify(accountApiService).getBalance(59);
+    }
+
 }

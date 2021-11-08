@@ -94,4 +94,14 @@ public class AccountApiService
 
         else return createAccountNotFoundResponse(accountId);
     }
+
+    public ResponseEntity<Response> getBalance(int accountId)
+    {
+        Float balance = accountService
+                .findById(accountId)
+                .map(Account::getLimit)
+                .orElseThrow(RuntimeException::new);
+
+        return ResponseEntity.ok(new BalanceResponse(new AmountDto(balance)));
+    }
 }
