@@ -1,10 +1,13 @@
 package jalil.demo.bankaccount.api.account.service;
 
+import jalil.demo.bankaccount.api.account.dto.AmountDto;
 import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
 import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
+import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
 import jalil.demo.bankaccount.api.account.dto.response.AccountCreationResponse;
 import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
 import jalil.demo.bankaccount.api.account.dto.response.CreatedAccountDto;
+import jalil.demo.bankaccount.api.account.dto.response.DepositResponse;
 import jalil.demo.bankaccount.api.common.dto.ErrorResponse;
 import jalil.demo.bankaccount.api.common.dto.Response;
 import jalil.demo.bankaccount.domain.account.model.Account;
@@ -47,6 +50,20 @@ public class AccountApiService
             return ResponseEntity.ok(accountQueryResponse);
         }
         else return createAccountNotFoundResponse(id);
+    }
+
+    public ResponseEntity<Response> deposit(int accountId, DepositRequest depositRequest)
+    {
+        Optional<Account> account = accountService.findById(accountId);
+
+        if (account.isPresent())
+        {
+            float amount = accountService.deposit(account.get(), depositRequest.getDeposit().getAmount());
+
+            return ResponseEntity.ok(new DepositResponse(new AmountDto(amount)));
+        }
+
+        else return createAccountNotFoundResponse(accountId);
     }
 
     private ResponseEntity<Response> createAccountNotFoundResponse(int id)

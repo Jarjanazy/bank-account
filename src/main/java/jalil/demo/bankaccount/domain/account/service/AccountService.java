@@ -30,4 +30,13 @@ public class AccountService
 
         return accountRepository.save(account);
     }
+
+    public float deposit(Account account, float amount)
+    {
+        account.setLimit(account.getLimit() + amount);
+
+        accountRepository.save(account);
+
+        return account.getLimit();
+    }
 }

@@ -1,9 +1,6 @@
 package jalil.demo.bankaccount.domain.account.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,6 +19,7 @@ public class Account
     @Column(nullable = false, name = "name")
     private String name;
 
+    @Setter
     @Column(nullable = false, name = "account_limit")
     private Float limit;
 

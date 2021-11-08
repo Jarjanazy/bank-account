@@ -1,9 +1,12 @@
 package jalil.demo.bankaccount.api.service;
 
+import jalil.demo.bankaccount.api.account.dto.AmountDto;
 import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
 import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
+import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
 import jalil.demo.bankaccount.api.account.dto.response.AccountCreationResponse;
 import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
+import jalil.demo.bankaccount.api.account.dto.response.DepositResponse;
 import jalil.demo.bankaccount.api.account.service.AccountApiService;
 import jalil.demo.bankaccount.api.common.dto.ErrorResponse;
 import jalil.demo.bankaccount.api.common.dto.Response;
@@ -83,5 +86,30 @@ public class AccountApiServiceTest
 
         assertThat(response.getErrorCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getErrorMessage()).isEqualTo("The account of id 3 wasn't found");
+    }
+
+    @Test
+    public void givenAccountIdAndDeposit_WhenAccountNotFound_ThenReturnErrorResponse()
+    {
+        when(accountRepository.findById(5)).thenReturn(Optional.empty());
+
+        ErrorResponse response = (ErrorResponse) accountApiService.deposit(5, new DepositRequest()).getBody();
+
+        assertThat(response.getErrorCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.getErrorMessage()).isEqualTo("The account of id 5 wasn't found");
+    }
+
+    @Test
+    public void givenAccountIdAndDeposit_WhenAccountIsFound_ThenDeposit()
+    {
+        Account account = Account.builder().limit(2f).build();
+
+        DepositRequest depositRequest = new DepositRequest(new AmountDto(9f));
+
+        when(accountRepository.findById(7)).thenReturn(Optional.of(account));
+
+        DepositResponse response = (DepositResponse) accountApiService.deposit(7, depositRequest).getBody();
+
+        assertThat(response.getBalance().getAmount()).isEqualTo(11f);
     }
 }

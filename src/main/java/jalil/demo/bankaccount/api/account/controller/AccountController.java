@@ -1,8 +1,8 @@
 package jalil.demo.bankaccount.api.account.controller;
 
 import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
+import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
 import jalil.demo.bankaccount.api.account.dto.response.AccountCreationResponse;
-import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
 import jalil.demo.bankaccount.api.account.service.AccountApiService;
 import jalil.demo.bankaccount.api.common.dto.Response;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +30,11 @@ public class AccountController
     public ResponseEntity<Response> getAccountById(@PathVariable int id)
     {
         return accountApiService.getAccountById(id);
+    }
+
+    @PostMapping("/accounts/{id}/deposit")
+    public ResponseEntity<Response> depositToAccount(@PathVariable int id, @RequestBody DepositRequest depositRequest)
+    {
+        return accountApiService.deposit(id, depositRequest);
     }
 }

@@ -2,10 +2,13 @@ package jalil.demo.bankaccount.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jalil.demo.bankaccount.api.account.controller.AccountController;
+import jalil.demo.bankaccount.api.account.dto.AmountDto;
 import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
 import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
+import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
 import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
 import jalil.demo.bankaccount.api.account.dto.response.CreatedAccountDto;
+import jalil.demo.bankaccount.api.account.dto.response.DepositResponse;
 import jalil.demo.bankaccount.api.account.service.AccountApiService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -104,6 +107,21 @@ public class AccountControllerTest
         assertThat(createdAccountDto.getName()).isEqualTo("testName");
         assertThat(createdAccountDto.getLimit()).isEqualTo(20.4f);
         assertThat(createdAccountDto.getCreatedAt()).isNotNull();
+    }
+
+    @Test
+    public void givenAnAccountId_WhenDepositIsMade_ThenReturnNewBalance() throws Exception
+    {
+        DepositRequest depositRequest = new DepositRequest(new AmountDto(19.8f));
+
+        MvcResult mvcResult = mockMvc.perform(post("/accounts/4/deposit")
+                .content(objectMapper.writeValueAsString(depositRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        DepositResponse depositResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), DepositResponse.class);
+
+        assertThat(depositResponse.getBalance().getAmount()).isEqualTo(50.3f);
     }
 
 }
