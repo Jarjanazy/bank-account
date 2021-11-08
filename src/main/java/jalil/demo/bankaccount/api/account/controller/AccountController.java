@@ -2,6 +2,7 @@ package jalil.demo.bankaccount.api.account.controller;
 
 import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
 import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
+import jalil.demo.bankaccount.api.account.dto.request.WithdrawlRequest;
 import jalil.demo.bankaccount.api.account.dto.response.AccountCreationResponse;
 import jalil.demo.bankaccount.api.account.service.AccountApiService;
 import jalil.demo.bankaccount.api.common.dto.Response;
@@ -36,5 +37,11 @@ public class AccountController
     public ResponseEntity<Response> depositToAccount(@PathVariable int id, @RequestBody DepositRequest depositRequest)
     {
         return accountApiService.deposit(id, depositRequest);
+    }
+
+    @PostMapping("/accounts/{id}/withdrawal")
+    public ResponseEntity<Response> withdrawlFromAccount(@PathVariable int id, @RequestBody WithdrawlRequest withdrawlRequest)
+    {
+        return accountApiService.withdrawl(id, withdrawlRequest);
     }
 }

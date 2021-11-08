@@ -4,9 +4,11 @@ import jalil.demo.bankaccount.api.account.dto.AmountDto;
 import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
 import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
 import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
+import jalil.demo.bankaccount.api.account.dto.request.WithdrawlRequest;
 import jalil.demo.bankaccount.api.account.dto.response.AccountCreationResponse;
 import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
 import jalil.demo.bankaccount.api.account.dto.response.DepositResponse;
+import jalil.demo.bankaccount.api.account.dto.response.WithdrawalResponse;
 import jalil.demo.bankaccount.api.account.service.AccountApiService;
 import jalil.demo.bankaccount.api.common.dto.ErrorResponse;
 import jalil.demo.bankaccount.api.common.dto.Response;
@@ -111,5 +113,34 @@ public class AccountApiServiceTest
         DepositResponse response = (DepositResponse) accountApiService.deposit(7, depositRequest).getBody();
 
         assertThat(response.getBalance().getAmount()).isEqualTo(11f);
+    }
+
+    @Test
+    public void givenAccountIdAndWithdrawl_WhenAmountIsBeyondLimit_ThenReturnErrorResponse()
+    {
+        Account account = Account.builder().limit(9f).build();
+
+        WithdrawlRequest withdrawlRequest = new WithdrawlRequest(new AmountDto(10f));
+
+        when(accountRepository.findById(2)).thenReturn(Optional.of(account));
+
+        ErrorResponse errorResponse = (ErrorResponse) accountApiService.withdrawl(2, withdrawlRequest).getBody();
+
+        assertThat(errorResponse.getErrorCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("Limit is not enough");
+    }
+
+    @Test
+    public void givenAccountIdAndWithdrawl_WhenAmountIsEnough_ThenWithdraw()
+    {
+        Account account = Account.builder().limit(11f).build();
+
+        WithdrawlRequest withdrawlRequest = new WithdrawlRequest(new AmountDto(10f));
+
+        when(accountRepository.findById(2)).thenReturn(Optional.of(account));
+
+        WithdrawalResponse withdrawalResponse = (WithdrawalResponse) accountApiService.withdrawl(2, withdrawlRequest).getBody();
+
+        assertThat(withdrawalResponse.getBalance().getAmount()).isEqualTo(1f);
     }
 }

@@ -4,10 +4,8 @@ import jalil.demo.bankaccount.api.account.dto.AmountDto;
 import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
 import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
 import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
-import jalil.demo.bankaccount.api.account.dto.response.AccountCreationResponse;
-import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
-import jalil.demo.bankaccount.api.account.dto.response.CreatedAccountDto;
-import jalil.demo.bankaccount.api.account.dto.response.DepositResponse;
+import jalil.demo.bankaccount.api.account.dto.request.WithdrawlRequest;
+import jalil.demo.bankaccount.api.account.dto.response.*;
 import jalil.demo.bankaccount.api.common.dto.ErrorResponse;
 import jalil.demo.bankaccount.api.common.dto.Response;
 import jalil.demo.bankaccount.domain.account.model.Account;
@@ -72,5 +70,28 @@ public class AccountApiService
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(),
                         String.format("The account of id %s wasn't found", id)));
+    }
+
+    public ResponseEntity<Response> withdrawl(int accountId, WithdrawlRequest withdrawlRequest)
+    {
+        Optional<Account> account = accountService.findById(accountId);
+
+        if (account.isPresent())
+        {
+            try
+            {
+                float amount =  accountService.withdrawl(account.get(), withdrawlRequest);
+
+                return ResponseEntity.ok(new WithdrawalResponse(new AmountDto(amount)));
+
+            } catch (RuntimeException e)
+            {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Limit is not enough"));
+            }
+        }
+
+        else return createAccountNotFoundResponse(accountId);
     }
 }

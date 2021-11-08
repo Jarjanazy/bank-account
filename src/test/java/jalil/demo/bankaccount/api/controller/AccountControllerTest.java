@@ -6,6 +6,7 @@ import jalil.demo.bankaccount.api.account.dto.AmountDto;
 import jalil.demo.bankaccount.api.account.dto.request.AccountCreationRequest;
 import jalil.demo.bankaccount.api.account.dto.request.AccountToCreateDto;
 import jalil.demo.bankaccount.api.account.dto.request.DepositRequest;
+import jalil.demo.bankaccount.api.account.dto.request.WithdrawlRequest;
 import jalil.demo.bankaccount.api.account.dto.response.AccountQueryResponse;
 import jalil.demo.bankaccount.api.account.dto.response.CreatedAccountDto;
 import jalil.demo.bankaccount.api.account.dto.response.DepositResponse;
@@ -22,6 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -122,6 +125,19 @@ public class AccountControllerTest
         DepositResponse depositResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), DepositResponse.class);
 
         assertThat(depositResponse.getBalance().getAmount()).isEqualTo(50.3f);
+    }
+
+    @Test
+    public void givenAnAccountId_WhenWithdrawlIsMade_ThenReturnNewBalance() throws Exception
+    {
+        WithdrawlRequest withdrawlRequest = new WithdrawlRequest(new AmountDto(2f));
+
+        mockMvc.perform(post("/accounts/44/withdrawal")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(withdrawlRequest)))
+                .andExpect(status().isOk());
+
+        verify(accountApiService).withdrawl(eq(44), any(WithdrawlRequest.class));
     }
 
 }
