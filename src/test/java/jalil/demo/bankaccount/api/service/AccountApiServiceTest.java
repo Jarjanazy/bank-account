@@ -8,9 +8,9 @@ import jalil.demo.bankaccount.api.account.dto.request.WithdrawlRequest;
 import jalil.demo.bankaccount.api.account.dto.response.*;
 import jalil.demo.bankaccount.api.account.service.AccountApiService;
 import jalil.demo.bankaccount.api.common.dto.ErrorResponse;
-import jalil.demo.bankaccount.api.common.dto.Response;
 import jalil.demo.bankaccount.domain.account.model.Account;
 import jalil.demo.bankaccount.domain.account.repo.IAccountRepository;
+import jalil.demo.bankaccount.domain.account.repo.ITransactionRepository;
 import jalil.demo.bankaccount.domain.account.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,10 +36,13 @@ public class AccountApiServiceTest
     @Mock
     private IAccountRepository accountRepository;
 
+    @Mock
+    private ITransactionRepository transactionRepository;
+
     @BeforeEach
     public void setup()
     {
-        AccountService accountService = new AccountService(accountRepository, null);
+        AccountService accountService = new AccountService(accountRepository, transactionRepository);
         accountApiService = new AccountApiService(accountService);
     }
 

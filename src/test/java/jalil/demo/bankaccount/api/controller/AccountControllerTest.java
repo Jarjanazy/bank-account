@@ -117,14 +117,12 @@ public class AccountControllerTest
     {
         DepositRequest depositRequest = new DepositRequest(new AmountDto(19.8f));
 
-        MvcResult mvcResult = mockMvc.perform(post("/accounts/4/deposit")
+        mockMvc.perform(post("/accounts/4/deposit")
+                .contentType("application/json")
                 .content(objectMapper.writeValueAsString(depositRequest)))
-                .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(status().isOk());
 
-        DepositResponse depositResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), DepositResponse.class);
-
-        assertThat(depositResponse.getBalance().getAmount()).isEqualTo(50.3f);
+        verify(accountApiService).deposit(eq(4), any(DepositRequest.class));
     }
 
     @Test
